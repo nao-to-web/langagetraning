@@ -1,0 +1,602 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>シャドウイング練習アプリ 🇨🇳🇷🇺</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Noto+Sans+JP:wght@400;500;700&family=Noto+Sans+SC:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    :root {
+      --bg: #f7f5f0;
+      --surface: #ffffff;
+      --surface2: #f1efe9;
+      --border: rgba(0,0,0,0.1);
+      --border2: rgba(0,0,0,0.18);
+      --text: #1a1917;
+      --text2: #5c5a55;
+      --text3: #9c9a96;
+      --accent-zh: #1D9E75;
+      --accent-zh-bg: #E1F5EE;
+      --accent-zh-text: #085041;
+      --accent-ru: #378ADD;
+      --accent-ru-bg: #E6F1FB;
+      --accent-ru-text: #0C447C;
+      --green-bg: #EAF3DE;
+      --green-text: #3B6D11;
+      --amber-bg: #FAEEDA;
+      --amber-text: #854F0B;
+      --red-bg: #FCEBEB;
+      --red-text: #A32D2D;
+      --radius: 10px;
+      --radius-lg: 14px;
+    }
+
+    @media (prefers-color-scheme: dark) {
+      :root {
+        --bg: #1a1917;
+        --surface: #242320;
+        --surface2: #2e2c29;
+        --border: rgba(255,255,255,0.1);
+        --border2: rgba(255,255,255,0.18);
+        --text: #f0ede8;
+        --text2: #a8a49e;
+        --text3: #6a6763;
+        --accent-zh: #5DCAA5;
+        --accent-zh-bg: #085041;
+        --accent-zh-text: #9FE1CB;
+        --accent-ru: #85B7EB;
+        --accent-ru-bg: #0C447C;
+        --accent-ru-text: #B5D4F4;
+        --green-bg: #27500A;
+        --green-text: #C0DD97;
+        --amber-bg: #633806;
+        --amber-text: #FAC775;
+        --red-bg: #791F1F;
+        --red-text: #F7C1C1;
+      }
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: 'Noto Sans JP', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      padding: 2rem 1rem 4rem;
+    }
+
+    header {
+      text-align: center;
+      margin-bottom: 2.5rem;
+    }
+
+    header h1 {
+      font-size: 1.6rem;
+      font-weight: 700;
+      letter-spacing: -0.02em;
+      color: var(--text);
+      margin-bottom: 0.35rem;
+    }
+
+    header p {
+      font-size: 0.875rem;
+      color: var(--text2);
+    }
+
+    .container {
+      width: 100%;
+      max-width: 560px;
+    }
+
+    .lang-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .lang-tab {
+      flex: 1;
+      padding: 10px 0;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.9rem;
+      font-family: inherit;
+      color: var(--text2);
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+
+    .lang-tab:hover { background: var(--surface2); }
+
+    .lang-tab.active-zh {
+      background: var(--accent-zh-bg);
+      border-color: var(--accent-zh);
+      color: var(--accent-zh-text);
+    }
+
+    .lang-tab.active-ru {
+      background: var(--accent-ru-bg);
+      border-color: var(--accent-ru);
+      color: var(--accent-ru-text);
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      margin-bottom: 1rem;
+    }
+
+    .phrase-nav {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 1.5rem;
+    }
+
+    .nav-btn {
+      background: var(--surface2);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 7px 14px;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-family: inherit;
+      color: var(--text2);
+      transition: background 0.12s;
+    }
+
+    .nav-btn:hover { background: var(--border); }
+
+    .phrase-counter {
+      margin-left: auto;
+      font-size: 0.8rem;
+      color: var(--text3);
+    }
+
+    .phrase-main {
+      font-size: 2rem;
+      font-weight: 700;
+      color: var(--text);
+      line-height: 1.35;
+      margin-bottom: 0.5rem;
+      font-family: 'Noto Sans SC', 'Noto Sans JP', sans-serif;
+    }
+
+    .phrase-sub {
+      font-size: 0.9rem;
+      color: var(--text2);
+      margin-bottom: 0.3rem;
+      font-style: italic;
+    }
+
+    .phrase-jp {
+      font-size: 0.875rem;
+      color: var(--text3);
+    }
+
+    .speed-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-top: 1.25rem;
+      padding-top: 1.25rem;
+      border-top: 1px solid var(--border);
+    }
+
+    .speed-row label {
+      font-size: 0.8rem;
+      color: var(--text2);
+      white-space: nowrap;
+    }
+
+    .speed-row input[type=range] {
+      flex: 1;
+      accent-color: var(--text2);
+      height: 4px;
+      cursor: pointer;
+    }
+
+    .speed-val {
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text);
+      min-width: 34px;
+      text-align: right;
+    }
+
+    .controls {
+      display: flex;
+      gap: 10px;
+      margin-top: 1.25rem;
+      flex-wrap: wrap;
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      padding: 10px 18px;
+      border-radius: var(--radius);
+      border: 1px solid var(--border2);
+      background: var(--surface2);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-family: inherit;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.12s;
+      flex: 1;
+      justify-content: center;
+    }
+
+    .btn:hover { background: var(--border); }
+    .btn:active { transform: scale(0.98); }
+
+    .btn svg { width: 18px; height: 18px; flex-shrink: 0; }
+
+    .btn-record.recording {
+      background: var(--red-bg);
+      border-color: #E24B4A;
+      color: var(--red-text);
+    }
+
+    .result-area {
+      margin-top: 1.25rem;
+      padding: 1rem 1.25rem;
+      border-radius: var(--radius);
+      border: 1px solid var(--border);
+      background: var(--surface2);
+    }
+
+    .result-label {
+      font-size: 0.72rem;
+      color: var(--text3);
+      letter-spacing: 0.08em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+    }
+
+    .result-text {
+      font-size: 1rem;
+      color: var(--text);
+      margin-bottom: 10px;
+      word-break: break-all;
+    }
+
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .score-badge {
+      display: inline-block;
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      white-space: nowrap;
+    }
+
+    .score-great { background: var(--green-bg); color: var(--green-text); }
+    .score-good  { background: var(--amber-bg); color: var(--amber-text); }
+    .score-try   { background: var(--red-bg);   color: var(--red-text); }
+
+    .score-bar-wrap {
+      flex: 1;
+      height: 6px;
+      background: var(--border);
+      border-radius: 3px;
+      overflow: hidden;
+    }
+
+    .score-bar {
+      height: 100%;
+      border-radius: 3px;
+      width: 0%;
+      transition: width 0.5s ease;
+    }
+
+    .score-num {
+      font-size: 0.8rem;
+      color: var(--text2);
+      min-width: 36px;
+      text-align: right;
+    }
+
+    .score-hint {
+      font-size: 0.78rem;
+      color: var(--text2);
+      margin-top: 8px;
+      line-height: 1.5;
+    }
+
+    .no-support {
+      margin-top: 1rem;
+      padding: 10px 14px;
+      background: var(--amber-bg);
+      color: var(--amber-text);
+      border-radius: var(--radius);
+      font-size: 0.82rem;
+      line-height: 1.5;
+    }
+
+    .progress-dots {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-top: 1rem;
+    }
+
+    .dot {
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--border2);
+      transition: background 0.2s;
+      cursor: pointer;
+    }
+
+    .dot.active { background: var(--text2); }
+
+    footer {
+      margin-top: 2.5rem;
+      font-size: 0.75rem;
+      color: var(--text3);
+      text-align: center;
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <h1>🗣 シャドウイング練習</h1>
+  <p>聞いて・真似して・採点してもらおう</p>
+</header>
+
+<div class="container">
+  <div class="lang-tabs">
+    <button class="lang-tab active-zh" onclick="setLang('zh')" id="tab-zh">🇨🇳 中国語</button>
+    <button class="lang-tab" onclick="setLang('ru')" id="tab-ru">🇷🇺 ロシア語</button>
+  </div>
+
+  <div class="card">
+    <div class="phrase-nav">
+      <button class="nav-btn" onclick="prevPhrase()">← 前へ</button>
+      <button class="nav-btn" onclick="nextPhrase()">次へ →</button>
+      <span class="phrase-counter" id="counter">1 / 8</span>
+    </div>
+
+    <div class="phrase-main" id="phrase-main">你好！</div>
+    <div class="phrase-sub" id="phrase-sub">Nǐ hǎo!</div>
+    <div class="phrase-jp" id="phrase-jp">こんにちは！</div>
+
+    <div class="speed-row">
+      <label for="speed-slider">速度</label>
+      <input type="range" id="speed-slider" min="0.5" max="1.5" step="0.1" value="0.9"
+             oninput="updateSpeed(this.value)">
+      <span class="speed-val" id="speed-val">0.9×</span>
+    </div>
+
+    <div class="controls">
+      <button class="btn" onclick="playPhrase()" id="btn-play">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <polygon points="11 5 6 9 2 9 2 15 6 15 11 19 11 5"></polygon>
+          <path d="M19.07 4.93a10 10 0 0 1 0 14.14"></path>
+          <path d="M15.54 8.46a5 5 0 0 1 0 7.07"></path>
+        </svg>
+        発音を聞く
+      </button>
+      <button class="btn btn-record" onclick="toggleRecord()" id="btn-record">
+        <svg id="mic-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M12 1a3 3 0 0 0-3 3v8a3 3 0 0 0 6 0V4a3 3 0 0 0-3-3z"></path>
+          <path d="M19 10v2a7 7 0 0 1-14 0v-2"></path>
+          <line x1="12" y1="19" x2="12" y2="23"></line>
+          <line x1="8" y1="23" x2="16" y2="23"></line>
+        </svg>
+        <span id="record-label">録音して採点</span>
+      </button>
+    </div>
+
+    <div class="result-area" id="result-area" style="display:none;">
+      <div class="result-label">認識されたテキスト</div>
+      <div class="result-text" id="result-text"></div>
+      <div class="score-row">
+        <span class="score-badge" id="score-badge"></span>
+        <div class="score-bar-wrap">
+          <div class="score-bar" id="score-bar"></div>
+        </div>
+        <span class="score-num" id="score-num"></span>
+      </div>
+      <div class="score-hint" id="score-hint"></div>
+    </div>
+
+    <div id="no-support-msg"></div>
+  </div>
+
+  <div class="progress-dots" id="progress-dots"></div>
+</div>
+
+<footer>Web Speech API使用 · Chrome推奨 · マイク権限が必要です</footer>
+
+<script>
+  const phrases = {
+    zh: [
+      { main: '你好！', sub: 'Nǐ hǎo!', jp: 'こんにちは！', lang: 'zh-CN', keywords: ['你好', 'nihao', 'ni hao'] },
+      { main: '我叫田中。', sub: 'Wǒ jiào Tanaka.', jp: '私は田中といいます。', lang: 'zh-CN', keywords: ['我叫', 'wo jiao', 'tanaka', '田中'] },
+      { main: '你叫什么名字？', sub: 'Nǐ jiào shénme míngzì?', jp: 'お名前は何ですか？', lang: 'zh-CN', keywords: ['你叫', '什么', '名字', 'ni jiao', 'shenme', 'mingzi'] },
+      { main: '我是日本人。', sub: 'Wǒ shì Rìběnrén.', jp: '私は日本人です。', lang: 'zh-CN', keywords: ['我是', '日本人', 'wo shi', 'ribenren'] },
+      { main: '很高兴认识你。', sub: 'Hěn gāoxìng rènshi nǐ.', jp: 'はじめまして。', lang: 'zh-CN', keywords: ['高兴', '认识', 'gaoxing', 'renshi'] },
+      { main: '你好吗？', sub: 'Nǐ hǎo ma?', jp: 'お元気ですか？', lang: 'zh-CN', keywords: ['你好吗', 'ni hao ma'] },
+      { main: '我很好，谢谢。', sub: 'Wǒ hěn hǎo, xièxie.', jp: '元気です、ありがとう。', lang: 'zh-CN', keywords: ['很好', '谢谢', 'hen hao', 'xie xie', 'xiexie'] },
+      { main: '再见！', sub: 'Zàijiàn!', jp: 'さようなら！', lang: 'zh-CN', keywords: ['再见', 'zaijian', 'zai jian'] },
+    ],
+    ru: [
+      { main: 'Привет!', sub: 'Privet!', jp: 'やあ！', lang: 'ru-RU', keywords: ['привет', 'privet'] },
+      { main: 'Здравствуйте!', sub: 'Zdravstvuyte!', jp: 'こんにちは！（丁寧）', lang: 'ru-RU', keywords: ['здравствуйте', 'zdravstvujte', 'zdravstvuyte'] },
+      { main: 'Меня зовут Танака.', sub: 'Menya zovut Tanaka.', jp: '私の名前は田中です。', lang: 'ru-RU', keywords: ['меня зовут', 'menya zovut', 'tanaka', 'танака'] },
+      { main: 'Как вас зовут?', sub: 'Kak vas zovut?', jp: 'お名前は何ですか？', lang: 'ru-RU', keywords: ['как вас зовут', 'kak vas zovut'] },
+      { main: 'Я из Японии.', sub: 'Ya iz Yaponii.', jp: '私は日本出身です。', lang: 'ru-RU', keywords: ['я из японии', 'ya iz yaponii', 'японии'] },
+      { main: 'Очень приятно.', sub: 'Ochen priyatno.', jp: 'はじめまして。', lang: 'ru-RU', keywords: ['очень приятно', 'ochen priyatno'] },
+      { main: 'Как дела?', sub: 'Kak dela?', jp: 'お元気ですか？', lang: 'ru-RU', keywords: ['как дела', 'kak dela'] },
+      { main: 'Хорошо, спасибо.', sub: 'Khorosho, spasibo.', jp: '元気です、ありがとう。', lang: 'ru-RU', keywords: ['хорошо', 'спасибо', 'khorosho', 'spasibo'] },
+    ]
+  };
+
+  let currentLang = 'zh';
+  let currentIndex = 0;
+  let recognition = null;
+  let isRecording = false;
+  let speechRate = 0.9;
+
+  function buildDots() {
+    const container = document.getElementById('progress-dots');
+    container.innerHTML = '';
+    phrases[currentLang].forEach((_, i) => {
+      const d = document.createElement('div');
+      d.className = 'dot' + (i === currentIndex ? ' active' : '');
+      d.onclick = () => { currentIndex = i; updateDisplay(); };
+      container.appendChild(d);
+    });
+  }
+
+  function setLang(lang) {
+    currentLang = lang;
+    currentIndex = 0;
+    document.getElementById('tab-zh').className = 'lang-tab' + (lang === 'zh' ? ' active-zh' : '');
+    document.getElementById('tab-ru').className = 'lang-tab' + (lang === 'ru' ? ' active-ru' : '');
+    updateDisplay();
+  }
+
+  function updateDisplay() {
+    const p = phrases[currentLang][currentIndex];
+    document.getElementById('phrase-main').textContent = p.main;
+    document.getElementById('phrase-sub').textContent = p.sub;
+    document.getElementById('phrase-jp').textContent = p.jp;
+    document.getElementById('counter').textContent = (currentIndex + 1) + ' / ' + phrases[currentLang].length;
+    document.getElementById('result-area').style.display = 'none';
+    buildDots();
+  }
+
+  function nextPhrase() {
+    currentIndex = (currentIndex + 1) % phrases[currentLang].length;
+    updateDisplay();
+  }
+
+  function prevPhrase() {
+    currentIndex = (currentIndex - 1 + phrases[currentLang].length) % phrases[currentLang].length;
+    updateDisplay();
+  }
+
+  function updateSpeed(v) {
+    speechRate = parseFloat(v);
+    document.getElementById('speed-val').textContent = parseFloat(v).toFixed(1) + '×';
+  }
+
+  function playPhrase() {
+    const p = phrases[currentLang][currentIndex];
+    if (!window.speechSynthesis) return;
+    window.speechSynthesis.cancel();
+    const utter = new SpeechSynthesisUtterance(p.main);
+    utter.lang = p.lang;
+    utter.rate = speechRate;
+    const voices = window.speechSynthesis.getVoices();
+    const match = voices.find(v => v.lang.startsWith(p.lang.split('-')[0]));
+    if (match) utter.voice = match;
+    const btn = document.getElementById('btn-play');
+    btn.innerHTML = btn.innerHTML.replace('発音を聞く', '再生中...');
+    utter.onend = () => {
+      btn.innerHTML = btn.innerHTML.replace('再生中...', '発音を聞く');
+    };
+    window.speechSynthesis.speak(utter);
+  }
+
+  function scoreResult(transcript, keywords) {
+    const t = transcript.toLowerCase().replace(/[.,!?。！？]/g, '');
+    let matches = 0;
+    for (const kw of keywords) {
+      if (t.includes(kw.toLowerCase())) matches++;
+    }
+    const ratio = matches / keywords.length;
+    if (ratio >= 0.5) return { score: Math.round(75 + ratio * 25), label: '素晴らしい！', cls: 'score-great', barColor: '#639922', hint: '発音がよく認識されました！そのまま続けて練習しましょう。' };
+    if (ratio >= 0.2) return { score: Math.round(40 + ratio * 100), label: 'もう少し！', cls: 'score-good', barColor: '#BA7517', hint: '一部認識できました。もう一度「発音を聞く」でよく確認してから再挑戦してみましょう。' };
+    return { score: Math.max(10, Math.round(ratio * 100)), label: '要練習', cls: 'score-try', barColor: '#E24B4A', hint: 'ゆっくりモード（速度0.6×）で何度も聞いて、少しずつ真似してみましょう。' };
+  }
+
+  function toggleRecord() {
+    if (!('webkitSpeechRecognition' in window) && !('SpeechRecognition' in window)) {
+      document.getElementById('no-support-msg').innerHTML =
+        '<div class="no-support">⚠️ このブラウザは音声認識に対応していません。Google Chromeをお使いください。</div>';
+      return;
+    }
+    if (isRecording) { recognition && recognition.stop(); return; }
+
+    const p = phrases[currentLang][currentIndex];
+    const SR = window.SpeechRecognition || window.webkitSpeechRecognition;
+    recognition = new SR();
+    recognition.lang = p.lang;
+    recognition.interimResults = false;
+    recognition.maxAlternatives = 3;
+
+    isRecording = true;
+    const btn = document.getElementById('btn-record');
+    btn.classList.add('recording');
+    document.getElementById('record-label').textContent = '録音中... (クリックで停止)';
+
+    recognition.onresult = (e) => {
+      let best = '';
+      for (let i = 0; i < e.results[0].length; i++) {
+        const t = e.results[0][i].transcript;
+        if (t.length > best.length) best = t;
+      }
+      const result = scoreResult(best, p.keywords);
+      const area = document.getElementById('result-area');
+      area.style.display = 'block';
+      document.getElementById('result-text').textContent = '「' + best + '」';
+      const badge = document.getElementById('score-badge');
+      badge.textContent = result.label;
+      badge.className = 'score-badge ' + result.cls;
+      const bar = document.getElementById('score-bar');
+      bar.style.background = result.barColor;
+      bar.style.width = '0%';
+      setTimeout(() => { bar.style.width = result.score + '%'; }, 50);
+      document.getElementById('score-num').textContent = result.score + 'pt';
+      document.getElementById('score-hint').textContent = result.hint;
+    };
+
+    recognition.onerror = (e) => {
+      const area = document.getElementById('result-area');
+      area.style.display = 'block';
+      document.getElementById('result-text').textContent =
+        e.error === 'no-speech' ? '音声が検出されませんでした。もう一度お試しください。' : 'エラー: ' + e.error;
+      document.getElementById('score-badge').textContent = '';
+      document.getElementById('score-bar').style.width = '0%';
+      document.getElementById('score-num').textContent = '';
+      document.getElementById('score-hint').textContent = '';
+    };
+
+    recognition.onend = () => {
+      isRecording = false;
+      const btn = document.getElementById('btn-record');
+      btn.classList.remove('recording');
+      document.getElementById('record-label').textContent = '録音して採点';
+    };
+
+    recognition.start();
+  }
+
+  window.speechSynthesis && window.speechSynthesis.getVoices();
+  updateDisplay();
+</script>
+</body>
+</html>
